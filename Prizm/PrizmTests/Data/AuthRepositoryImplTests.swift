@@ -226,6 +226,27 @@ final class AuthRepositoryImplTests: XCTestCase {
         }
     }
 
+    /// Stretched keys held as Data slices keep nonzero indices; zeroing them with a
+    /// zero-based range writes out of bounds (run with AddressSanitizer).
+    func testCancelTwoFactor_slicedStretchedKeys_doesNotCrash() async throws {
+        let serverEnv = ServerEnvironment(
+            base: URL(string: "https://vault.example.com")!,
+            overrides: nil
+        )
+        try await sut.setServerEnvironment(serverEnv)
+        mockAPI.preLoginResponse        = PreLoginResponse(kdf: 0, kdfIterations: 600_000, kdfMemory: nil, kdfParallelism: nil)
+        mockAPI.tokenTwoFactorProviders = [0]
+        mockCrypto.stubbedServerHash    = "hash=="
+        let bytes = Data((0..<96).map { UInt8($0) })
+        mockCrypto.stubbedStretchedKeys = CryptoKeys(encryptionKey: bytes[16..<48], macKey: bytes[48..<80])
+        _ = try await sut.loginWithPassword(email: "alice@example.com", masterPassword: Data("pw!".utf8))
+
+        sut.cancelTwoFactor()
+        sut.cancelTwoFactor()
+
+        XCTAssertEqual(bytes, Data((0..<96).map { UInt8($0) }), "source buffer must stay intact (CoW)")
+    }
+
     // MARK: - storedAccount
 
     /// storedAccount returns nil when no activeUserId is in Keychain.
