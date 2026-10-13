@@ -245,13 +245,11 @@ final class AuthRepositoryImpl: AuthRepository, EmbeddedBiometricUnlock {
         // copy produced by `if let` — zeroing `pending` would only zero the copy's CoW
         // buffer, not the stored struct's. In-place mutation through `pendingTwoFactor!`
         // is safe here because we verified non-nil one line above.
-        if let pending = pendingTwoFactor {
-            pendingTwoFactor!.stretchedKeys.encryptionKey.resetBytes(
-                in: 0..<pending.stretchedKeys.encryptionKey.count
-            )
-            pendingTwoFactor!.stretchedKeys.macKey.resetBytes(
-                in: 0..<pending.stretchedKeys.macKey.count
-            )
+        // Data slices keep their original indices, so zero via `.indices`, not `0..<count`.
+        if let encRange = pendingTwoFactor?.stretchedKeys.encryptionKey.indices,
+           let macRange = pendingTwoFactor?.stretchedKeys.macKey.indices {
+            pendingTwoFactor!.stretchedKeys.encryptionKey.resetBytes(in: encRange)
+            pendingTwoFactor!.stretchedKeys.macKey.resetBytes(in: macRange)
         }
         pendingTwoFactor = nil
         logger.info("Pending 2FA state cleared — stretched keys zeroed")
