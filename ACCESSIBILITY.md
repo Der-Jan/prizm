@@ -95,3 +95,11 @@ To report an accessibility issue, [open an issue](https://github.com/b0x42/prizm
 ### Client certificate prototype
 
 The prelogin certificate controls use text labels and explicit accessibility labels for file selection, password entry, inspection, confirmation and removal. The import title is a heading; login errors are announced with `AccessibilityNotification.Announcement`. Certificate details and fingerprint are selectable text. VoiceOver/manual keyboard acceptance of the new import sheet is still pending alongside signed mTLS prototype acceptance.
+
+SSH agent settings expose the enabled state, status and selectable socket path.
+Signing approvals use native keyboard-accessible buttons, a labelled key and
+fingerprint, verified host-key path when available, and a section heading.
+The additional labelled Allow until vault locks action appears only for verified
+bindings. Escape or closing the window denies the
+request. Errors are announced to assistive technology. VoiceOver verification
+of the new approval window remains manual acceptance work.

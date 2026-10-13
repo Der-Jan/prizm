@@ -7,6 +7,7 @@ final class RootViewModelLockTests: XCTestCase {
 
     private var mockAuth: MockAuthRepository!
     private var mockVault: MockVaultRepository!
+    private var dependencies: MockRootDependencies!
     private var sut: RootViewModel!
 
     private let stubAccount = Account(
@@ -24,6 +25,7 @@ final class RootViewModelLockTests: XCTestCase {
         mockAuth = MockAuthRepository()
         mockVault = MockVaultRepository()
         let deps = MockRootDependencies(auth: mockAuth, vault: mockVault)
+        dependencies = deps
         sut = RootViewModel(container: deps)
     }
 
@@ -47,6 +49,7 @@ final class RootViewModelLockTests: XCTestCase {
         sut.screen = .vault
 
         sut.lockVault()
+        XCTAssertFalse(dependencies.sshUnlocked, "SSH signing must be blocked before asynchronous clearing")
         try await waitUntil { if case .unlock = self.sut.screen { return true }; return false }
 
         guard case .unlock = sut.screen else {
@@ -138,6 +141,8 @@ final class RootViewModelLockTests: XCTestCase {
 
 @MainActor
 private final class MockRootDependencies: RootViewModelDependencies {
+    var sshUnlocked = true
+    func setSSHAgentVaultUnlocked(_ unlocked: Bool) { sshUnlocked = unlocked }
     let authRepo: any AuthRepository
     let vaultRepo: any VaultRepository
     let vaultKeyCache = VaultKeyCache()

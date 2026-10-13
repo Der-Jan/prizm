@@ -8,6 +8,7 @@ import SwiftUI
 struct SettingsView: View {
 
     let authRepository: any AuthRepository
+    @ObservedObject var sshAgent: SSHAgentViewModel
 
     private var deviceHasBiometrics: Bool {
         LAContext().canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
@@ -15,6 +16,7 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            SSHAgentSettingsView(viewModel: sshAgent)
             if deviceHasBiometrics {
                 Section("Security") {
                     BiometricUnlockToggle(authRepository: authRepository)

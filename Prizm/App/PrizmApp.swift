@@ -13,7 +13,9 @@ import os.log
 @main
 struct PrizmApp: App {
 
+    @NSApplicationDelegateAdaptor(PrizmLifecycleDelegate.self) private var lifecycle
     @StateObject private var container: AppContainer
+    @StateObject private var sshAgentVM: SSHAgentViewModel
     @StateObject private var rootVM:    RootViewModel
     @State       private var optionKeyMonitor = OptionKeyMonitor()
 
@@ -22,6 +24,7 @@ struct PrizmApp: App {
 
     init() {
         let c = AppContainer()
+        _sshAgentVM = StateObject(wrappedValue: SSHAgentViewModel(manager: c.sshAgent))
         _container = StateObject(wrappedValue: c)
         _rootVM    = StateObject(wrappedValue: RootViewModel(container: c))
         NSApplication.shared.activate()
@@ -32,6 +35,14 @@ struct PrizmApp: App {
             rootView
                 .frame(minWidth: 480, minHeight: 360)
                 .environment(optionKeyMonitor)
+                .onAppear {
+                    let agent = container.sshAgent
+                    lifecycle.onTerminate = { agent.shutdown() }
+                    let action = openWindow
+                    sshAgentVM.presentApproval = {
+                        action(id: "ssh-agent-approval")
+                    }
+                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
@@ -124,8 +135,13 @@ struct PrizmApp: App {
         // Settings window — opened via ⌘, (macOS convention) or the gear toolbar button.
         // The Settings scene does not inherit the WindowGroup environment, so we pass
         // the container explicitly via .environmentObject().
+        Window("SSH Key Access", id: "ssh-agent-approval") {
+            SSHAgentApprovalView(viewModel: sshAgentVM)
+        }
+        .windowResizability(.contentSize)
+
         Settings {
-            SettingsView(authRepository: container.authRepository)
+            SettingsView(authRepository: container.authRepository, sshAgent: sshAgentVM)
         }
     }
 
@@ -203,6 +219,13 @@ struct PrizmApp: App {
     }
 }
 
+/// Keep termination cleanup active even when all SwiftUI windows are closed.
+@MainActor
+final class PrizmLifecycleDelegate: NSObject, NSApplicationDelegate {
+    var onTerminate: (() -> Void)?
+    func applicationWillTerminate(_ notification: Notification) { onTerminate?() }
+}
+
 // MARK: - RootViewModel
 
 /// Dependencies required by `RootViewModel` — extracted for testability.
@@ -214,6 +237,7 @@ protocol RootViewModelDependencies: AnyObject {
     var vaultKeyCache: VaultKeyCache { get }
     /// The per-organisation symmetric key cache. Cleared on vault lock alongside the vault store.
     var orgKeyCache: OrgKeyCache { get }
+    func setSSHAgentVaultUnlocked(_ unlocked: Bool)
     func makeLoginViewModel() -> LoginViewModel
     func makeUnlockViewModel(account: Account) -> UnlockViewModel
     func makeVaultBrowserViewModel() -> VaultBrowserViewModel
@@ -223,6 +247,7 @@ protocol RootViewModelDependencies: AnyObject {
 }
 
 extension AppContainer: RootViewModelDependencies {
+    func setSSHAgentVaultUnlocked(_ unlocked: Bool) { sshAgent.setVaultUnlocked(unlocked) }
     var authRepo: any AuthRepository { authRepository }
     var vaultRepo: any VaultRepository { vaultStore }
 }
@@ -365,6 +390,7 @@ final class RootViewModel: ObservableObject {
     /// logic is identical in both flows. `caller` is included in the error log so the
     /// originating flow is identifiable when the account is unexpectedly missing.
     private func transitionToVault(caller: String) {
+        container.setSSHAgentVaultUnlocked(true)
         // Re-scope before recording: on first login the AppContainer was initialised without
         // a known email; this corrects the UserDefaults key before handleSyncCompleted writes to it.
         if let email = container.authRepo.storedAccount()?.email {
@@ -430,6 +456,7 @@ final class RootViewModel: ObservableObject {
 
     /// Clears all session data and returns to the login screen.
     func signOut() {
+        container.setSSHAgentVaultUnlocked(false)
         Task {
             do {
                 try await container.authRepo.signOut()
@@ -450,6 +477,7 @@ final class RootViewModel: ObservableObject {
     /// No-op if the vault is not currently unlocked.
     func lockVault() {
         guard isVaultUnlocked else { return }
+        container.setSSHAgentVaultUnlocked(false)
         Task {
             await container.authRepo.lockVault()
             await container.vaultRepo.clearVault()

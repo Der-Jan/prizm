@@ -249,3 +249,26 @@ Identity persistence requires a signed app with the existing Keychain access-gro
 Server certificate validation uses the normal macOS trust system. Importing a client CA does not install server trust. Each session owns a fixed credential snapshot; server/certificate changes and sign-out cancel old connections and reject old network responses. Vault locking preserves the transport assignment. Sign-out preserves it for subsequent prelogin; explicit Remove deletes the assignment and its unreferenced managed identity.
 
 External icon and attachment sessions reject client identity challenges and share no credential storage. Cross-origin redirects are rejected, including redirects carrying bearer headers. Attachments on mTLS servers are intentionally unavailable in the prototype. Master-password authentication, 2FA, key derivation and vault encryption are unchanged.
+
+### SSH agent
+
+The optional agent listens only on a Unix socket inside Prizm's sandbox container.
+It uses the existing entitlements; no helper, TCP server, root service or extra
+sandbox exception is installed. Only same-UID peers and user-only socket access
+are accepted. Signing requires an unlocked vault and explicit approval, either
+once or until lock for an exact key/username/verified host-key path.
+Lock/sign-out immediately invalidate pending requests and remembered grants, including late
+results. Connections, frames and approval duration are bounded. Private keys are
+imported in memory into CryptoKit/Security.framework only after approval; public
+and private key correspondence is checked before signing. No private-key files,
+raw signing payloads or signatures are logged. Existing Swift String/Data and
+framework-key memory-zeroization limits still apply.
+
+Only SSH public-key user authentication is supported. The agent does not establish
+trust in a destination hostname, implement `ssh-add -h` destination constraints,
+or sign arbitrary data/Git commits. Session binding verifies host signatures
+and matches the authentication session and hostbound key; connection state and
+grants live only in bounded memory. New connections must verify a fresh binding
+before reusing a grant. Failed bindings prevent signing on that connection.
+Unbound requests never reuse grants. Key items with master-password
+re-prompt enabled are excluded. See README for supported key formats and setup.

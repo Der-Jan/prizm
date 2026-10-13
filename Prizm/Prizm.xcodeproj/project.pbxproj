@@ -164,6 +164,15 @@
 		F37EED6CF1484ECDA92A15AE /* ServerSessionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CA5F97DA2B4F55B2ED2890; };
 		FFFE06577F1846F284719D5D /* ClientCertificateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C5420F90104E05A541C344; };
 		258B9DAD85F14FC2A5313F34 /* ClientCertificateImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C01B290E524598B17BA856 /* ClientCertificateImportView.swift */; };
+		9967DE0C492445A4814B6881 /* SSHWire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE7B09E76624E368D7F6262; };
+		DADF9CC2F1EA4DB493D543F9 /* SSHKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FE9C66D1874073825F230D; };
+		4B93409D4FA240E399F05DC0 /* SSHAgentSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49EE26B91B464DA2BAD6D68B; };
+		7A63C7639331449CAB313086 /* SSHAgentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8F6788A66DF473A83335A26; };
+		A565408D8ED1498BB2D5C49D /* SSHAgentManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B56F8E153A54FB99364F263; };
+		F068F78BC996426FBE92F86E /* SSHAgentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB95448478A4E5D8D993711; };
+		BF12AB54FE4F4F22B42EEFD1 /* SSHAgentViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD07F9B980FF44B7AA34871E; };
+		9420763E6350460DA629A507 /* SSHApprovalWindowActivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0BC40A7F9794F618D609367; };
+		4AC72BF91D834A0DB9D80F6D /* SSHSessionBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFECBB2036614604A3154B9B; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -336,6 +345,15 @@
 		E5CA5F97DA2B4F55B2ED2890 /* ServerSessionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSessionFactory.swift; sourceTree = "<group>"; };
 		A6C5420F90104E05A541C344 /* ClientCertificateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCertificateManager.swift; sourceTree = "<group>"; };
 		D6C01B290E524598B17BA856 /* ClientCertificateImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCertificateImportView.swift; sourceTree = "<group>"; };
+		8DE7B09E76624E368D7F6262 /* SSHWire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SSH/SSHWire.swift; sourceTree = SOURCE_ROOT; };
+		94FE9C66D1874073825F230D /* SSHKeyMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SSH/SSHKeyMaterial.swift; sourceTree = SOURCE_ROOT; };
+		49EE26B91B464DA2BAD6D68B /* SSHAgentSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SSH/SSHAgentSocket.swift; sourceTree = SOURCE_ROOT; };
+		C8F6788A66DF473A83335A26 /* SSHAgentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SSH/SSHAgentManager.swift; sourceTree = SOURCE_ROOT; };
+		3B56F8E153A54FB99364F263 /* SSHAgentManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain/UseCases/SSHAgentManaging.swift; sourceTree = SOURCE_ROOT; };
+		6EB95448478A4E5D8D993711 /* SSHAgentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Presentation/SSHAgent/SSHAgentViewModel.swift; sourceTree = SOURCE_ROOT; };
+		CD07F9B980FF44B7AA34871E /* SSHAgentViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Presentation/SSHAgent/SSHAgentViews.swift; sourceTree = SOURCE_ROOT; };
+		F0BC40A7F9794F618D609367 /* SSHApprovalWindowActivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Presentation/SSHAgent/SSHApprovalWindowActivation.swift; sourceTree = SOURCE_ROOT; };
+		EFECBB2036614604A3154B9B /* SSHSessionBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SSH/SSHSessionBinding.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -635,6 +653,15 @@
 		434D9EB12F670B9C00052BCB = {
 			isa = PBXGroup;
 			children = (
+				EFECBB2036614604A3154B9B /* SSHSessionBinding.swift */,
+				F0BC40A7F9794F618D609367 /* SSHApprovalWindowActivation.swift */,
+				CD07F9B980FF44B7AA34871E /* SSHAgentViews.swift */,
+				6EB95448478A4E5D8D993711 /* SSHAgentViewModel.swift */,
+				3B56F8E153A54FB99364F263 /* SSHAgentManaging.swift */,
+				C8F6788A66DF473A83335A26 /* SSHAgentManager.swift */,
+				49EE26B91B464DA2BAD6D68B /* SSHAgentSocket.swift */,
+				94FE9C66D1874073825F230D /* SSHKeyMaterial.swift */,
+				8DE7B09E76624E368D7F6262 /* SSHWire.swift */,
 				4309FCF62F680C950031C9F4 /* Presentation */,
 				4309FCEF2F680AE70031C9F4 /* Data */,
 				4309FCEB2F680ABF0031C9F4 /* Domain */,
@@ -912,6 +939,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AC72BF91D834A0DB9D80F6D /* SSHSessionBinding.swift in Sources */,
+				9420763E6350460DA629A507 /* SSHApprovalWindowActivation.swift in Sources */,
+				BF12AB54FE4F4F22B42EEFD1 /* SSHAgentViews.swift in Sources */,
+				F068F78BC996426FBE92F86E /* SSHAgentViewModel.swift in Sources */,
+				A565408D8ED1498BB2D5C49D /* SSHAgentManaging.swift in Sources */,
+				7A63C7639331449CAB313086 /* SSHAgentManager.swift in Sources */,
+				4B93409D4FA240E399F05DC0 /* SSHAgentSocket.swift in Sources */,
+				DADF9CC2F1EA4DB493D543F9 /* SSHKeyMaterial.swift in Sources */,
+				9967DE0C492445A4814B6881 /* SSHWire.swift in Sources */,
 				258B9DAD85F14FC2A5313F34 /* ClientCertificateImportView.swift in Sources */,
 				FFFE06577F1846F284719D5D /* ClientCertificateManager.swift in Sources */,
 				F37EED6CF1484ECDA92A15AE /* ServerSessionFactory.swift in Sources */,

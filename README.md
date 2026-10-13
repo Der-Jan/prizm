@@ -159,3 +159,59 @@ Pull requests welcome. Please open an issue first for anything significant.
 ---
 
 *Not affiliated with Bitwarden, Inc., 8bit Solutions LLC, or the Vaultwarden project.*
+
+## SSH agent
+
+Enable **SSH agent** in Prizm Settings (⌘,). The agent uses keys from your
+unlocked vault and offers **Deny**, **Allow Once**, and, for verified session
+bindings, **Allow until vault locks**. The last option remembers the exact vault
+public key, SSH username and host-key forwarding path in memory. A new connection
+must verify its own host signature and match that scope before reusing approval.
+Different keys, usernames or host paths require a new approval. No grant is saved
+to disk. Lock/sign-out/disable/quit clear all grants and connection bindings.
+Locking, sleeping, signing out, closing the approval window or disabling the
+agent cancels pending approval. It does not write private-key files.
+
+Prizm keeps App Sandbox enabled and creates the socket in its app container:
+
+```sh
+export SSH_AUTH_SOCK="$HOME/Library/Containers/de.b0x42.Prizm/Data/.bitwarden-ssh-agent.sock"
+ssh-add -L
+```
+
+Add the `export` line to `~/.zshrc` (or `~/.bashrc`) for future shells. The exact
+resolved path is shown in Settings; use that path if your build has a different
+bundle identifier. SSH and Git fetch/push use this agent; existing terminal
+sessions need the variable set again. To select one identity, use its **public**
+key file with `ssh -o IdentitiesOnly=yes -i ~/.ssh/example.pub user@host`.
+
+Supported private-key formats are unencrypted OpenSSH Ed25519 and unencrypted
+PEM RSA (PKCS#1 or PKCS#8, 2048–8192 bits). RSA signatures use SHA-256 or SHA-512;
+SHA-1 is rejected. Public and private keys must match. Items requiring a master
+password re-prompt are excluded. OpenSSH RSA private containers, encrypted keys,
+ECDSA, hardware keys, certificates, `ssh-add` imports/removals and Git commit
+signing are not supported in this first version. The approval identifies the
+key and SSH username, not a verified destination hostname. The SSH client
+remains responsible for host-key verification.
+
+Prizm supports OpenSSH `session-bind@openssh.com` with Ed25519, RSA SHA-2 and
+NIST ECDSA **host** keys (independent of supported vault signing-key formats).
+The dialog shows the verified session host-key fingerprint and forwarding path,
+without claiming a verified hostname. Unsupported host-key formats or failed
+bindings cannot create remembered approvals. Clients without session binding
+still require **Allow Once**. This does not implement `ssh-add -h` destination
+constraints or read `known_hosts`.
+
+The socket is user-only (0600). Prizm refuses an existing socket/file/symlink
+instead of replacing it. Stop any other instance first. Following a crash,
+check that Prizm has exited before manually removing its stale socket at the
+path shown in Settings; enabling the agent then recreates it. Normal exit or
+disabling the agent removes only the socket created by this running instance.
+The agent does not change your shell files or launchctl environment automatically.
+
+Developer verification: `python3 tests/ssh/integration.py` runs the opt-in signed
+sandbox/OpenSSH test with a mock vault containing a published RFC test key. It
+starts a temporary loopback sshd, verifies a signature independently with OpenSSL,
+and tests a real SSH login. It uses a separate temporary socket inside the app container and disables the
+normal agent only in the test process. Your running agent can remain enabled. This
+requires Xcode signing setup and OpenSSL 3; no production vault key is used.

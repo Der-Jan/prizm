@@ -12,6 +12,7 @@ final class AppContainer: ObservableObject {
 
     // MARK: - Data layer
 
+    let sshAgent: any SSHAgentManaging
     let clientCertificates: any ClientCertificateManaging
     let apiClient:     PrizmAPIClientImpl
     let crypto:        PrizmCryptoServiceImpl
@@ -106,6 +107,7 @@ final class AppContainer: ObservableObject {
         let accountEmail = auth.storedAccount()?.email ?? ""
         let syncTimestamp = SyncTimestampRepositoryImpl(email: accountEmail)
 
+        self.sshAgent = SSHAgentManager(vault: vault, crypto: crypto)
         self.apiClient       = api
         self.crypto          = crypto
         self.keychain        = keychain
