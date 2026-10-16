@@ -70,7 +70,8 @@ nonisolated struct LoginContent: Equatable, Hashable {
     let username: String?
     let password: String?
     let uris: [LoginURI]
-    /// Stored TOTP seed. Present on some items but never displayed in v1 (FR-038).
+    /// Stored TOTP seed. Present on some items. The raw seed is never displayed or copied; only the
+    /// generated one-time code derived from it is shown (see `GenerateTOTPCodeUseCase`).
     let totp: String?
     let notes: String?
     let customFields: [CustomField]
@@ -144,4 +145,13 @@ nonisolated struct SSHKeyContent: Equatable, Hashable {
     let keyFingerprint: String?
     let notes: String?
     let customFields: [CustomField]
+}
+
+nonisolated extension VaultItem {
+    /// True for a Login whose stored TOTP seed is not blank. This only says a seed *exists*;
+    /// whether it can produce a code is decided by `TOTPSeedParser`.
+    var hasTOTPSeed: Bool {
+        guard case .login(let login) = content, let seed = login.totp else { return false }
+        return !seed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 }

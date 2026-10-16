@@ -77,6 +77,17 @@ nonisolated enum AccessibilityID {
         static func row(_ id: String) -> String { "itemList.row.\(id)" }
     }
 
+    // MARK: - Verification codes
+
+    enum VerificationCodes {
+        static let list         = "verificationCodes.list"
+        static let emptyState   = "verificationCodes.empty"
+        static let sidebarRow   = "sidebar.verificationCodes"
+        static func row(_ id: String) -> String { "verificationCodes.row.\(id)" }
+        static func code(_ id: String) -> String { "verificationCodes.code.\(id)" }
+        static func copyButton(_ id: String) -> String { "verificationCodes.copy.\(id)" }
+    }
+
     // MARK: - Item Detail (US3)
 
     enum Detail {
